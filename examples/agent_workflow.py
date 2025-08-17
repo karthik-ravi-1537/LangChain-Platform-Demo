@@ -1,6 +1,7 @@
 """
 Agent workflow example demonstrating multi-agent coordination and LangGraph workflows.
 """
+
 import os
 import sys
 
@@ -8,9 +9,9 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from config.settings import settings
-from src.langsmith.setup import langsmith_setup
-from src.graphs.workflow_graph import MathWorkflowGraph
 from src.graphs.agent_graph import MultiAgentSystem
+from src.graphs.workflow_graph import MathWorkflowGraph
+from src.langsmith.setup import langsmith_setup
 
 
 def main():
@@ -34,10 +35,7 @@ def main():
         math_workflow = MathWorkflowGraph()
 
         # Demo workflow with a few examples
-        workflow_queries = [
-            "What is 15 * 8 + 12?",
-            "Calculate sqrt(64) + sin(pi/2)"
-        ]
+        workflow_queries = ["What is 15 * 8 + 12?", "Calculate sqrt(64) + sin(pi/2)"]
 
         for query in workflow_queries:
             print(f"\n🔍 Processing: {query}")
@@ -49,10 +47,7 @@ def main():
         multi_agent = MultiAgentSystem()
 
         # Demo multi-agent with complex queries
-        agent_queries = [
-            "Calculate 25 squared and find recent AI news",
-            "What is LangGraph and how does it work?"
-        ]
+        agent_queries = ["Calculate 25 squared and find recent AI news", "What is LangGraph and how does it work?"]
 
         for query in agent_queries:
             print(f"\n🤖 Multi-Agent Processing: {query}")
@@ -65,7 +60,7 @@ def main():
         while True:
             user_query = input("\n❓ Your query: ").strip()
 
-            if user_query.lower() in ['quit', 'exit', 'q']:
+            if user_query.lower() in ["quit", "exit", "q"]:
                 print("👋 Thanks for using the agent workflow example!")
                 break
 
@@ -73,7 +68,7 @@ def main():
                 continue
 
             # Choose system based on query complexity
-            if any(word in user_query.lower() for word in ['calculate', 'math', 'sqrt', 'sin', 'cos']):
+            if any(word in user_query.lower() for word in ["calculate", "math", "sqrt", "sin", "cos"]):
                 print("🧮 Using Math Workflow...")
                 result = math_workflow.process_query(user_query)
             else:

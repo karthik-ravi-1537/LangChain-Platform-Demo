@@ -1,9 +1,9 @@
 """
 RAG (Retrieval-Augmented Generation) chain for document-based question answering.
 """
+
 import os
 import sys
-from typing import List, Dict, Optional
 
 from langchain.chains import RetrievalQA
 from langchain_community.document_loaders import DirectoryLoader, TextLoader
@@ -23,19 +23,14 @@ from src.langsmith.setup import langsmith_setup
 class RAGChain:
     """RAG chain for document-based question answering."""
 
-    def __init__(self, documents_path: Optional[str] = None):
+    def __init__(self, documents_path: str | None = None):
         """Initialize the RAG chain."""
         if not settings.OPENAI_API_KEY:
             raise ValueError("OpenAI API key required for RAG chain")
 
-        self.llm = OpenAI(
-            api_key=settings.OPENAI_API_KEY,
-            temperature=0.3
-        )
+        self.llm = OpenAI(api_key=settings.OPENAI_API_KEY, temperature=0.3)
 
-        self.embeddings = OpenAIEmbeddings(
-            api_key=settings.OPENAI_API_KEY
-        )
+        self.embeddings = OpenAIEmbeddings(api_key=settings.OPENAI_API_KEY)
 
         self.text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=1000,
@@ -50,12 +45,12 @@ class RAGChain:
         if documents_path:
             self.load_documents(documents_path)
 
-    def create_sample_documents(self) -> List[Document]:
+    def create_sample_documents(self) -> list[Document]:
         """Create sample documents for demonstration."""
         sample_docs = [
             Document(
                 page_content="""
-                LangChain is a framework for developing applications powered by language models. 
+                LangChain is a framework for developing applications powered by language models.
                 It provides tools for connecting LLMs to data sources, building chains of operations,
                 and creating agents that can use tools. Key features include:
                 - Chain composition for complex workflows
@@ -63,7 +58,7 @@ class RAGChain:
                 - Tool integration for external data access
                 - Agent frameworks for autonomous decision making
                 """,
-                metadata={"source": "langchain_intro", "topic": "framework"}
+                metadata={"source": "langchain_intro", "topic": "framework"},
             ),
             Document(
                 page_content="""
@@ -76,7 +71,7 @@ class RAGChain:
                 - Error handling and recovery mechanisms
                 - Human-in-the-loop interactions
                 """,
-                metadata={"source": "langgraph_intro", "topic": "workflow"}
+                metadata={"source": "langgraph_intro", "topic": "workflow"},
             ),
             Document(
                 page_content="""
@@ -88,7 +83,7 @@ class RAGChain:
                 - Evaluation metrics and feedback collection
                 - Collaboration tools for team development
                 """,
-                metadata={"source": "langsmith_intro", "topic": "monitoring"}
+                metadata={"source": "langsmith_intro", "topic": "monitoring"},
             ),
             Document(
                 page_content="""
@@ -100,7 +95,7 @@ class RAGChain:
                 - Chroma: Lightweight embedding database
                 Vector databases enable finding relevant documents based on semantic similarity.
                 """,
-                metadata={"source": "vector_db_guide", "topic": "storage"}
+                metadata={"source": "vector_db_guide", "topic": "storage"},
             ),
             Document(
                 page_content="""
@@ -113,8 +108,8 @@ class RAGChain:
                 - Iterative refinement based on results
                 Good prompts lead to more reliable and useful AI responses.
                 """,
-                metadata={"source": "prompt_engineering", "topic": "optimization"}
-            )
+                metadata={"source": "prompt_engineering", "topic": "optimization"},
+            ),
         ]
         return sample_docs
 
@@ -123,11 +118,7 @@ class RAGChain:
         try:
             if os.path.isdir(documents_path):
                 # Load from directory
-                loader = DirectoryLoader(
-                    documents_path,
-                    glob="**/*.txt",
-                    loader_cls=TextLoader
-                )
+                loader = DirectoryLoader(documents_path, glob="**/*.txt", loader_cls=TextLoader)
                 documents = loader.load()
             elif os.path.isfile(documents_path):
                 # Load single file
@@ -155,7 +146,7 @@ class RAGChain:
         documents = self.create_sample_documents()
         self._create_vectorstore(documents)
 
-    def _create_vectorstore(self, documents: List[Document]):
+    def _create_vectorstore(self, documents: list[Document]):
         """Create vector store from documents."""
         print(f"🔄 Processing {len(documents)} documents...")
 
@@ -164,10 +155,7 @@ class RAGChain:
         print(f"📄 Created {len(splits)} document chunks")
 
         # Create vector store
-        self.vectorstore = FAISS.from_documents(
-            splits,
-            self.embeddings
-        )
+        self.vectorstore = FAISS.from_documents(splits, self.embeddings)
 
         # Create QA chain
         self._create_qa_chain()
@@ -181,14 +169,14 @@ class RAGChain:
             You are an AI assistant that answers questions based on the provided context.
             Use the following pieces of context to answer the question at the end.
             If you don't know the answer based on the context, say "I don't have enough information in the provided context to answer this question."
-            
+
             Context:
             {context}
-            
+
             Question: {question}
-            
+
             Answer: Let me help you with that based on the information provided.
-            """
+            """,
         )
 
         self.qa_chain = RetrievalQA.from_chain_type(
@@ -197,16 +185,13 @@ class RAGChain:
             retriever=self.vectorstore.as_retriever(search_kwargs={"k": 3}),
             chain_type_kwargs={"prompt": custom_prompt},
             return_source_documents=True,
-            verbose=True
+            verbose=True,
         )
 
-    def ask_question(self, question: str) -> Dict[str, str]:
+    def ask_question(self, question: str) -> dict[str, str]:
         """Ask a question using the RAG chain."""
         if not self.qa_chain:
-            return {
-                "answer": "❌ RAG chain not initialized. Please load documents first.",
-                "sources": []
-            }
+            return {"answer": "❌ RAG chain not initialized. Please load documents first.", "sources": []}
 
         print(f"❓ Question: {question}")
 
@@ -219,22 +204,16 @@ class RAGChain:
                 for doc in result["source_documents"]:
                     source_info = {
                         "content": doc.page_content[:200] + "..." if len(doc.page_content) > 200 else doc.page_content,
-                        "metadata": doc.metadata
+                        "metadata": doc.metadata,
                     }
                     sources.append(source_info)
 
-            return {
-                "answer": result["result"],
-                "sources": sources
-            }
+            return {"answer": result["result"], "sources": sources}
 
         except Exception as e:
-            return {
-                "answer": f"❌ Error processing question: {str(e)}",
-                "sources": []
-            }
+            return {"answer": f"❌ Error processing question: {str(e)}", "sources": []}
 
-    def similarity_search(self, query: str, k: int = 3) -> List[Dict]:
+    def similarity_search(self, query: str, k: int = 3) -> list[dict]:
         """Perform similarity search on the vector store."""
         if not self.vectorstore:
             return []
@@ -244,10 +223,7 @@ class RAGChain:
             results = []
 
             for doc in docs:
-                results.append({
-                    "content": doc.page_content,
-                    "metadata": doc.metadata
-                })
+                results.append({"content": doc.page_content, "metadata": doc.metadata})
 
             return results
 
@@ -270,7 +246,7 @@ class RAGChain:
             "What monitoring capabilities does LangSmith provide?",
             "What are the benefits of using vector databases?",
             "What are some best practices for prompt engineering?",
-            "How do I integrate multiple AI tools together?"
+            "How do I integrate multiple AI tools together?",
         ]
 
         for i, question in enumerate(test_questions, 1):
@@ -279,16 +255,16 @@ class RAGChain:
 
             print(f"🤖 Answer: {result['answer']}")
 
-            if result['sources']:
+            if result["sources"]:
                 print(f"\n📖 Sources ({len(result['sources'])}):")
-                for j, source in enumerate(result['sources'], 1):
+                for j, source in enumerate(result["sources"], 1):
                     print(f"   {j}. {source['metadata'].get('source', 'Unknown')}")
                     print(f"      Topic: {source['metadata'].get('topic', 'N/A')}")
 
             print("-" * 40)
 
         # Show similarity search
-        print(f"\n🔍 Similarity Search Demo")
+        print("\n🔍 Similarity Search Demo")
         similar_docs = self.similarity_search("LangChain tools and agents", k=2)
         for i, doc in enumerate(similar_docs, 1):
             print(f"{i}. {doc['content'][:150]}...")

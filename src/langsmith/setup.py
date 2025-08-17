@@ -1,8 +1,8 @@
 """
 LangSmith setup and configuration for monitoring and tracing.
 """
+
 import os
-from typing import Optional
 
 from langsmith import Client
 
@@ -13,7 +13,7 @@ class LangSmithSetup:
     """Setup and manage LangSmith tracing and monitoring."""
 
     def __init__(self):
-        self.client: Optional[Client] = None
+        self.client: Client | None = None
         self._setup_tracing()
 
     def _setup_tracing(self):
@@ -27,10 +27,7 @@ class LangSmithSetup:
                 os.environ["LANGSMITH_PROJECT"] = settings.LANGSMITH_PROJECT
 
                 # Initialize LangSmith client
-                self.client = Client(
-                    api_url=settings.LANGSMITH_ENDPOINT,
-                    api_key=settings.LANGSMITH_API_KEY
-                )
+                self.client = Client(api_url=settings.LANGSMITH_ENDPOINT, api_key=settings.LANGSMITH_API_KEY)
                 print(f"✅ LangSmith tracing enabled for project: {settings.LANGSMITH_PROJECT}")
 
             except Exception as e:
@@ -46,10 +43,7 @@ class LangSmithSetup:
             return None
 
         try:
-            dataset = self.client.create_dataset(
-                dataset_name=dataset_name,
-                description=description
-            )
+            dataset = self.client.create_dataset(dataset_name=dataset_name, description=description)
             print(f"✅ Dataset '{dataset_name}' created successfully")
             return dataset
         except Exception as e:
@@ -63,12 +57,7 @@ class LangSmithSetup:
             return
 
         try:
-            self.client.create_feedback(
-                run_id=run_id,
-                key=key,
-                score=score,
-                comment=comment
-            )
+            self.client.create_feedback(run_id=run_id, key=key, score=score, comment=comment)
             print(f"✅ Feedback logged for run {run_id}")
         except Exception as e:
             print(f"❌ Failed to log feedback: {e}")

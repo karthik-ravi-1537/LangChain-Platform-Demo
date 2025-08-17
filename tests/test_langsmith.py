@@ -1,9 +1,10 @@
 """
 Test suite for the LangSmith setup and monitoring.
 """
+
 import os
 import sys
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -25,7 +26,7 @@ class TestLangSmithSetup:
         result = langsmith_setup.is_enabled()
         assert isinstance(result, bool)
 
-    @patch('src.langsmith.setup.settings')
+    @patch("src.langsmith.setup.settings")
     def test_setup_with_no_api_key(self, mock_settings):
         """Test setup behavior when no API key is provided."""
         mock_settings.LANGCHAIN_API_KEY = None
@@ -34,8 +35,8 @@ class TestLangSmithSetup:
         setup = LangSmithSetup()
         assert not setup.is_enabled()
 
-    @patch('src.langsmith.setup.settings')
-    @patch('src.langsmith.setup.Client')
+    @patch("src.langsmith.setup.settings")
+    @patch("src.langsmith.setup.Client")
     def test_setup_with_api_key(self, mock_client, mock_settings):
         """Test setup behavior when API key is provided."""
         # Use the correct attribute names that match our settings class

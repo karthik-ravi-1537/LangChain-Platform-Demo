@@ -1,33 +1,35 @@
 """
 Agent Graph demonstrating multi-agent coordination using LangGraph.
 """
+
 import json
 import os
 import sys
-from typing import Dict, List, TypedDict
+from typing import TypedDict
 
-from langchain_core.messages import BaseMessage, HumanMessage, AIMessage
+from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
 from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
-from langgraph.graph import StateGraph, END
+from langgraph.graph import END, StateGraph
 
 # Add the project root to the path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 from config.settings import settings
-from src.langsmith.setup import langsmith_setup
-from src.tools.calculator import calculator_tool, advanced_calculator_tool
-from src.tools.web_search import web_search_tool
 from src.chains.rag_chain import RAGChain
+from src.langsmith.setup import langsmith_setup
+from src.tools.calculator import advanced_calculator_tool, calculator_tool
+from src.tools.web_search import web_search_tool
 
 
 class AgentState(TypedDict):
     """State for the multi-agent system."""
-    messages: List[BaseMessage]
+
+    messages: list[BaseMessage]
     current_agent: str
     task_type: str
     user_query: str
-    agent_results: Dict[str, str]
+    agent_results: dict[str, str]
     final_response: str
     next_action: str
 
@@ -40,11 +42,7 @@ class MultiAgentSystem:
         if not settings.OPENAI_API_KEY:
             raise ValueError("OpenAI API key required for multi-agent system")
 
-        self.llm = ChatOpenAI(
-            api_key=settings.OPENAI_API_KEY,
-            model="gpt-3.5-turbo",
-            temperature=0.3
-        )
+        self.llm = ChatOpenAI(api_key=settings.OPENAI_API_KEY, model="gpt-3.5-turbo", temperature=0.3)
 
         # Initialize specialized agents
         self._initialize_agents()
@@ -60,23 +58,24 @@ class MultiAgentSystem:
     def _initialize_agents(self):
         """Initialize specialized agents with different tools."""
         # Math Agent - simplified for compatibility
-        from langchain.agents import create_react_agent
-        from langchain.agents import AgentExecutor
         from langchain import hub
+        from langchain.agents import AgentExecutor, create_react_agent
 
         # Get the react prompt
         try:
             react_prompt = hub.pull("hwchase17/react")
-        except:
+        except Exception:
             # Fallback prompt if hub is not available
             from langchain.prompts import PromptTemplate
-            react_prompt = PromptTemplate.from_template("""
+
+            react_prompt = PromptTemplate.from_template(
+                """
             Answer the following questions as best you can. You have access to the following tools:
-            
+
             {tools}
-            
+
             Use the following format:
-            
+
             Question: the input question you must answer
             Thought: you should always think about what to do
             Action: the action to take, should be one of [{tool_names}]
@@ -85,17 +84,19 @@ class MultiAgentSystem:
             ... (this Thought/Action/Action Input/Observation can repeat N times)
             Thought: I now know the final answer
             Final Answer: the final answer to the original input question
-            
+
             Begin!
-            
+
             Question: {input}
             Thought: {agent_scratchpad}
-            """)
+            """
+            )
 
         # Math Agent
         math_agent = create_react_agent(self.llm, [calculator_tool, advanced_calculator_tool], react_prompt)
-        self.math_agent = AgentExecutor(agent=math_agent, tools=[calculator_tool, advanced_calculator_tool],
-                                        verbose=True)
+        self.math_agent = AgentExecutor(
+            agent=math_agent, tools=[calculator_tool, advanced_calculator_tool], verbose=True
+        )
 
         # Research Agent - simplified to avoid multi-input issues
         research_agent = create_react_agent(self.llm, [web_search_tool], react_prompt)
@@ -129,8 +130,8 @@ class MultiAgentSystem:
                 "math": "math_agent",
                 "research": "research_agent",
                 "knowledge": "knowledge_agent",
-                "synthesize": "synthesizer"
-            }
+                "synthesize": "synthesizer",
+            },
         )
 
         # Connect agents to synthesizer
@@ -149,16 +150,16 @@ class MultiAgentSystem:
         analysis_prompt = f"""
         Analyze this user query and determine the best approach:
         Query: {state['user_query']}
-        
+
         Task types:
         - math: Mathematical calculations, equations, formulas
         - research: Current events, facts, web information
         - knowledge: Questions about LangChain, LangGraph, LangSmith, AI concepts
         - synthesize: Complex queries requiring multiple agents
-        
+
         If the query needs multiple agents, respond with "synthesize".
         Otherwise, respond with the single most appropriate task type.
-        
+
         Response format: <task_type>
         """
 
@@ -273,12 +274,12 @@ class MultiAgentSystem:
         # Synthesize final response
         synthesis_prompt = f"""
         Synthesize the following agent results into a comprehensive response:
-        
+
         User Query: {state['user_query']}
-        
+
         Agent Results:
         {json.dumps(results, indent=2)}
-        
+
         Provide a clear, helpful response that integrates relevant information from the agents.
         If some agents didn't provide useful information, focus on the most relevant results.
         """
@@ -287,7 +288,7 @@ class MultiAgentSystem:
             response = self.llm.invoke([HumanMessage(content=synthesis_prompt)])
             state["final_response"] = response.content
 
-            print(f"✅ Synthesis complete")
+            print("✅ Synthesis complete")
 
         except Exception as e:
             state["final_response"] = f"Synthesis error: {str(e)}"
@@ -300,14 +301,14 @@ class MultiAgentSystem:
         """Get math result for synthesis."""
         try:
             return self.math_agent.invoke(query)
-        except:
+        except Exception:
             return "No mathematical computation needed"
 
     def _get_research_result(self, query: str) -> str:
         """Get research result for synthesis."""
         try:
             return self.research_agent.invoke(query)
-        except:
+        except Exception:
             return "No web research needed"
 
     def _get_knowledge_result(self, query: str) -> str:
@@ -317,7 +318,7 @@ class MultiAgentSystem:
                 result = self.rag_chain.ask_question(query)
                 return result["answer"]
             return "Knowledge base not available"
-        except:
+        except Exception:
             return "No knowledge base query needed"
 
     def process_query(self, query: str) -> str:
@@ -332,7 +333,7 @@ class MultiAgentSystem:
             "user_query": query,
             "agent_results": {},
             "final_response": "",
-            "next_action": ""
+            "next_action": "",
         }
 
         # Run the workflow
@@ -354,13 +355,13 @@ class MultiAgentSystem:
             "What are the latest developments in quantum computing?",
             "How does LangGraph handle state management?",
             "Calculate the area of a circle with radius 5 and tell me about recent AI breakthroughs",
-            "What is 2 + 2 and what does LangChain do?"
+            "What is 2 + 2 and what does LangChain do?",
         ]
 
         for i, query in enumerate(test_queries, 1):
             print(f"\n--- Query {i}: {query} ---")
             result = self.process_query(query)
-            print(f"\n🤖 Final Response:")
+            print("\n🤖 Final Response:")
             print(result)
             print("-" * 50)
 

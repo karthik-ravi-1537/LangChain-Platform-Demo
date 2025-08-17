@@ -1,6 +1,7 @@
 """
 Test suite for the configuration package.
 """
+
 import os
 import sys
 
@@ -9,7 +10,7 @@ import pytest
 # Add the project root to the path for testing
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
-from config import settings, Settings, get_config, DevelopmentConfig, ProductionConfig, TestingConfig
+from config import DevelopmentConfig, ProductionConfig, Settings, TestingConfig, get_config, settings
 
 
 class TestSettings:
@@ -22,11 +23,11 @@ class TestSettings:
     def test_settings_has_required_attributes(self):
         """Test that settings has all required attributes."""
         required_attrs = [
-            'OPENAI_API_KEY',
-            'LANGSMITH_TRACING',
-            'LANGSMITH_ENDPOINT',
-            'LANGSMITH_API_KEY',
-            'LANGSMITH_PROJECT'
+            "OPENAI_API_KEY",
+            "LANGSMITH_TRACING",
+            "LANGSMITH_ENDPOINT",
+            "LANGSMITH_API_KEY",
+            "LANGSMITH_PROJECT",
         ]
 
         for attr in required_attrs:
@@ -61,7 +62,7 @@ class TestEnvironmentConfigs:
         """Test development configuration."""
         dev_config = get_config("development")
         assert isinstance(dev_config, DevelopmentConfig)
-        assert dev_config.DEBUG == True
+        assert dev_config.DEBUG
         assert dev_config.LOG_LEVEL == "DEBUG"
         assert "dev" in dev_config.LANGCHAIN_PROJECT
 
@@ -69,7 +70,7 @@ class TestEnvironmentConfigs:
         """Test production configuration."""
         prod_config = get_config("production")
         assert isinstance(prod_config, ProductionConfig)
-        assert prod_config.DEBUG == False
+        assert not prod_config.DEBUG
         assert prod_config.LOG_LEVEL == "INFO"
         assert "prod" in prod_config.LANGCHAIN_PROJECT
 
@@ -77,7 +78,7 @@ class TestEnvironmentConfigs:
         """Test testing configuration."""
         test_config = get_config("testing")
         assert isinstance(test_config, TestingConfig)
-        assert test_config.DEBUG == True
+        assert test_config.DEBUG
         assert test_config.OPENAI_API_KEY == "test-key"
         assert test_config.LANGCHAIN_API_KEY == "test-key"
 
@@ -92,10 +93,7 @@ class TestConfigPackage:
 
     def test_package_imports(self):
         """Test that all expected items can be imported from config package."""
-        from config import (
-            Settings, settings, get_config,
-            DevelopmentConfig, ProductionConfig, TestingConfig
-        )
+        from config import DevelopmentConfig, ProductionConfig, Settings, TestingConfig, get_config, settings
 
         # Check that all imports are successful
         assert Settings is not None
@@ -108,16 +106,22 @@ class TestConfigPackage:
     def test_package_version(self):
         """Test that package has version information."""
         import config
-        assert hasattr(config, '__version__')
+
+        assert hasattr(config, "__version__")
         assert config.__version__ == "1.0.0"
 
     def test_package_all_attribute(self):
         """Test that package has proper __all__ attribute."""
         import config
-        assert hasattr(config, '__all__')
+
+        assert hasattr(config, "__all__")
         expected_exports = [
-            "Settings", "settings", "get_config",
-            "DevelopmentConfig", "ProductionConfig", "TestingConfig"
+            "Settings",
+            "settings",
+            "get_config",
+            "DevelopmentConfig",
+            "ProductionConfig",
+            "TestingConfig",
         ]
         for item in expected_exports:
             assert item in config.__all__

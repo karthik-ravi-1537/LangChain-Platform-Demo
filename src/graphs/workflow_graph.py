@@ -1,28 +1,30 @@
 """
 LangGraph workflow examples demonstrating state management and conditional routing.
 """
+
 import os
 import sys
-from typing import Dict, List, TypedDict
+from typing import TypedDict
 
-from langchain_core.messages import BaseMessage, HumanMessage, AIMessage
+from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
 from langchain_openai import ChatOpenAI
 from langgraph.checkpoint.memory import MemorySaver
-from langgraph.graph import StateGraph, END
+from langgraph.graph import END, StateGraph
 
 # Add the project root to the path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 from config.settings import settings
 from src.langsmith.setup import langsmith_setup
-from src.tools.calculator import calculator_tool, advanced_calculator_tool
+from src.tools.calculator import advanced_calculator_tool, calculator_tool
 
 
 class WorkflowState(TypedDict):
     """State for the workflow graph."""
-    messages: List[BaseMessage]
+
+    messages: list[BaseMessage]
     current_task: str
-    results: Dict[str, str]
+    results: dict[str, str]
     next_action: str
     user_input: str
     error_count: int
@@ -36,11 +38,7 @@ class MathWorkflowGraph:
         if not settings.OPENAI_API_KEY:
             raise ValueError("OpenAI API key required for LangGraph workflows")
 
-        self.llm = ChatOpenAI(
-            api_key=settings.OPENAI_API_KEY,
-            model="gpt-3.5-turbo",
-            temperature=0.1
-        )
+        self.llm = ChatOpenAI(api_key=settings.OPENAI_API_KEY, model="gpt-3.5-turbo", temperature=0.1)
 
         # Create the workflow graph
         self.workflow = StateGraph(WorkflowState)
@@ -67,11 +65,7 @@ class MathWorkflowGraph:
         self.workflow.add_conditional_edges(
             "analyze_query",
             self._route_calculation,
-            {
-                "simple": "simple_calculation",
-                "advanced": "advanced_calculation",
-                "error": "handle_error"
-            }
+            {"simple": "simple_calculation", "advanced": "advanced_calculation", "error": "handle_error"},
         )
 
         self.workflow.add_edge("simple_calculation", "validate_result")
@@ -80,11 +74,7 @@ class MathWorkflowGraph:
         self.workflow.add_conditional_edges(
             "validate_result",
             self._check_validation,
-            {
-                "success": "format_response",
-                "retry": "analyze_query",
-                "error": "handle_error"
-            }
+            {"success": "format_response", "retry": "analyze_query", "error": "handle_error"},
         )
 
         self.workflow.add_edge("format_response", END)
@@ -98,14 +88,14 @@ class MathWorkflowGraph:
         analysis_prompt = f"""
         Analyze this mathematical query and determine if it needs basic or advanced calculation:
         Query: {state['user_input']}
-        
+
         Consider:
         - Basic: Simple arithmetic (+ - * / parentheses)
         - Advanced: Functions like sqrt, sin, cos, log, pi, e
-        
+
         Respond with either "basic" or "advanced" followed by the mathematical expression to evaluate.
         Format: <type>|<expression>
-        
+
         Example: "basic|2 + 3 * 4" or "advanced|sqrt(16) + sin(pi/2)"
         """
 
@@ -192,11 +182,11 @@ class MathWorkflowGraph:
 
         formatted_response = f"""
         📊 Mathematical Calculation Complete
-        
+
         Query: {state['user_input']}
         Expression: {expression}
         Result: {calculation}
-        
+
         ✅ Calculation completed successfully!
         """
 
@@ -211,10 +201,10 @@ class MathWorkflowGraph:
         error_msg = state["results"].get("error", "Unknown error occurred")
         error_response = f"""
         ❌ Error Processing Mathematical Query
-        
+
         Query: {state['user_input']}
         Error: {error_msg}
-        
+
         Please try rephrasing your mathematical question.
         """
 
@@ -233,7 +223,7 @@ class MathWorkflowGraph:
             "results": {},
             "next_action": "",
             "user_input": query,
-            "error_count": 0
+            "error_count": 0,
         }
 
         # Run the workflow
@@ -255,7 +245,7 @@ class MathWorkflowGraph:
             "Calculate the square root of 144",
             "What is sin(pi/2) + cos(0)?",
             "Find 2 * pi * 5",
-            "What is the result of (10 + 5) / 3?"
+            "What is the result of (10 + 5) / 3?",
         ]
 
         for i, query in enumerate(test_queries, 1):

@@ -241,6 +241,30 @@ This project will be extended with:
 
 ## 🤝 Contributing
 
+### Development Setup
+
+```bash
+# Clone and install with dev dependencies
+uv sync --dev
+source .venv/bin/activate
+
+# Install development tools
+uv pip install -e ".[dev]"
+
+# Set up pre-commit hooks
+pre-commit install
+
+# Run formatting and linting
+pre-commit run --all-files
+```
+
+### Development Tools
+
+- **ruff**: Fast Python linter and formatter
+- **black**: Code formatter  
+- **pre-commit**: Git hooks for code quality
+- **pytest**: Testing framework
+
 Feel free to extend this project with additional examples, tools, or workflows. The modular structure makes it easy to
 add new components.
 
