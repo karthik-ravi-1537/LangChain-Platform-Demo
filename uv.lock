@@ -772,6 +772,8 @@ dependencies = [
     { name = "numpy" },
     { name = "pandas" },
     { name = "pypdf" },
+    { name = "pytest" },
+    { name = "pytest-asyncio" },
     { name = "python-docx" },
     { name = "python-dotenv" },
     { name = "requests" },
@@ -781,8 +783,6 @@ dependencies = [
 dev = [
     { name = "black" },
     { name = "pre-commit" },
-    { name = "pytest" },
-    { name = "pytest-asyncio" },
     { name = "ruff" },
 ]
 
@@ -803,8 +803,8 @@ requires-dist = [
     { name = "pandas", specifier = ">=2.0.0" },
     { name = "pre-commit", marker = "extra == 'dev'" },
     { name = "pypdf", specifier = ">=3.15.0" },
-    { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.4.0" },
-    { name = "pytest-asyncio", marker = "extra == 'dev'" },
+    { name = "pytest", specifier = ">=7.4.0" },
+    { name = "pytest-asyncio" },
     { name = "python-docx", specifier = ">=0.8.11" },
     { name = "python-dotenv", specifier = ">=1.0.0" },
     { name = "requests", specifier = ">=2.31.0" },

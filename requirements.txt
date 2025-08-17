@@ -52,6 +52,8 @@ idna==3.10
     #   httpx
     #   requests
     #   yarl
+iniconfig==2.1.0
+    # via pytest
 jiter==0.10.0
     # via openai
 jsonpatch==1.33
@@ -127,8 +129,11 @@ packaging==24.2
     #   langchainhub
     #   langsmith
     #   marshmallow
+    #   pytest
 pandas==2.3.1
     # via langchain-platform-demo (pyproject.toml)
+pluggy==1.6.0
+    # via pytest
 propcache==0.3.2
     # via
     #   aiohttp
@@ -145,7 +150,15 @@ pydantic-core==2.33.2
     # via pydantic
 pydantic-settings==2.10.1
     # via langchain-community
+pygments==2.19.2
+    # via pytest
 pypdf==6.0.0
+    # via langchain-platform-demo (pyproject.toml)
+pytest==8.4.1
+    # via
+    #   langchain-platform-demo (pyproject.toml)
+    #   pytest-asyncio
+pytest-asyncio==1.1.0
     # via langchain-platform-demo (pyproject.toml)
 python-dateutil==2.9.0.post0
     # via pandas
