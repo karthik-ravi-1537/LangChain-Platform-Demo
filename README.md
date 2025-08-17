@@ -1,38 +1,13 @@
 # LangChain Platform Demo
 
-This project demonstrates the integration and usage of **LangChain**, **LangGraph**, and **LangSmith** - showcasing how
-these tools work together to build powerful AI applications with monitoring and observability.
+Integration and usage demonstration of **LangChain**, **LangGraph**, and **LangSmith** for building AI applications with monitoring and observability.
 
-## 🚀 Features
+## Features
 
 - **LangChain Integration**: Chains, agents, tools, and memory management
-- **LangGraph Workflows**: Complex workflow orchestration (coming soon)
+- **LangGraph Workflows**: Complex workflow orchestration
 - **LangSmith Monitoring**: Real-time tracing, debugging, and analytics
 - **Modular Architecture**: Clean, extensible project structure
-- **Production Ready**: Environment configuration and error handling
-
-## 📁 Project Structure
-
-```
-LangChain-Platform-Demo/
-├── README.md                    # This file
-├── environment.yml              # Conda environment configuration
-├── requirements.txt             # Alternative pip dependencies
-├── .env.example                 # Environment variables template
-├── config/
-│   └── settings.py             # Application configuration
-├── src/
-│   ├── chains/
-│   │   └── basic_chain.py      # LangChain chain examples
-│   ├── tools/
-│   │   └── calculator.py       # Custom tools for agents
-│   ├── langsmith/
-│   │   └── setup.py            # LangSmith configuration
-│   └── utils/
-├── examples/
-│   └── basic_usage.py          # Complete usage demonstration
-└── tests/                      # Unit tests (coming soon)
-```
 
 ## Installation
 
@@ -86,160 +61,50 @@ python test_setup.py
 python examples/basic_usage.py
 ```
 
-This will demonstrate:
+This demonstrates:
+- Basic LangChain chains
+- Custom tools (calculator)
+- Conversational agents with memory
+- LangSmith tracing (if configured)
 
-- ✅ Basic LangChain chains
-- ✅ Custom tools (calculator)
-- ✅ Conversational agents with memory
-- ✅ LangSmith tracing (if configured)
+## Project Structure
 
-### Test Individual Components
-
-```bash
-# Test basic chain
-python src/chains/basic_chain.py
-
-# Test calculator tools
-python src/tools/calculator.py
+```
+LangChain-Platform-Demo/
+├── config/              # Application configuration
+├── src/
+│   ├── chains/         # LangChain chain examples
+│   ├── tools/          # Custom tools for agents
+│   ├── langsmith/      # LangSmith configuration
+│   └── utils/          # Utility modules
+├── examples/           # Complete usage demonstrations
+└── tests/              # Unit tests
 ```
 
-## 📊 LangSmith Integration
-
-LangSmith provides powerful monitoring and debugging capabilities:
-
-### Features Demonstrated:
-
-- **Automatic Tracing**: All LangChain operations are automatically traced
-- **Performance Monitoring**: Track latency, token usage, and costs
-- **Debugging**: Step-by-step execution visualization
-- **Analytics**: Usage patterns and performance metrics
-
-### Viewing Traces:
-
-1. Ensure `LANGSMITH_TRACING=true` in your `.env`
-2. Add your LangSmith API key
-3. Run any example
-4. View traces at [smith.langchain.com](https://smith.langchain.com)
-
-## 🔧 Components Overview
+## Components
 
 ### LangChain Components
+- **Basic Chain**: Fact generation with output parsers
+- **Calculator Tools**: Mathematical operations with validation
+- **Agents**: Conversational agents with tool integration
 
-#### Basic Chain (`src/chains/basic_chain.py`)
+### LangSmith Integration
+- **Automatic Tracing**: All operations traced automatically
+- **Performance Monitoring**: Latency, token usage, and costs
+- **Debugging**: Step-by-step execution visualization
 
-- Simple fact generation
-- List generation with custom output parsers
-- Prompt template management
-- Error handling
+## Testing
 
-#### Calculator Tools (`src/tools/calculator.py`)
+```bash
+# Test individual components
+python src/chains/basic_chain.py
+python src/tools/calculator.py
 
-- Basic mathematical operations
-- Advanced functions (sqrt, sin, cos, etc.)
-- Input validation and error handling
-- Async support
-
-### LangSmith Components
-
-#### Setup (`src/langsmith/setup.py`)
-
-- Automatic tracing configuration
-- Dataset creation and management
-- Feedback logging
-- Client initialization
-
-### Configuration (`config/settings.py`)
-
-- Environment variable management
-- API key validation
-- Centralized settings
-
-## 🎯 Usage Examples
-
-### Basic Chain Usage
-
-```python
-from src.chains.basic_chain import BasicChain
-
-chain = BasicChain()
-fact = chain.get_simple_fact("artificial intelligence")
-print(fact)
+# Run verification
+python test_setup.py
 ```
 
-### Agent with Tools
-
-```python
-from langchain.agents import initialize_agent
-from src.tools.calculator import calculator_tool
-
-agent = initialize_agent([calculator_tool], llm, verbose=True)
-result = agent.invoke("What is 25 * 4?")
-```
-
-### LangSmith Tracing
-
-All operations are automatically traced when LangSmith is configured. No additional code needed!
-
-## 📈 What's Next
-
-This project will be extended with:
-
-- **LangGraph Workflows**: Complex multi-step workflows
-- **RAG Implementation**: Document-based question answering
-- **Web Search Tools**: Integration with search APIs
-- **Advanced Agents**: Multi-agent systems
-- **Custom Evaluators**: LangSmith evaluation metrics
-- **Unit Tests**: Comprehensive test coverage
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-1. **Missing API Keys**
-   ```
-   Error: Missing API keys: OPENAI_API_KEY
-   ```
-   Solution: Add your OpenAI API key to the `.env` file
-
-2. **LangSmith Not Working**
-   ```
-   LangSmith tracing disabled
-   ```
-   Solution: Add `LANGSMITH_API_KEY` and set `LANGSMITH_TRACING=true`
-
-3. **Import Errors**
-   ```
-   ModuleNotFoundError: No module named 'langchain'
-   ```
-   Solution: Ensure your environment is activated and dependencies are installed:
-   ```bash
-   # For conda:
-   conda activate langchain-platform-demo
-   conda env update -f environment.yml  # or pip install -r requirements.txt
-   
-   # For venv:
-   source venv-langchain-platform-demo/bin/activate  # macOS/Linux
-   # venv-langchain-platform-demo\Scripts\activate   # Windows
-   pip install -r requirements.txt
-   ```
-
-4. **Environment Not Found**
-   ```
-   CondaEnvironmentError: cannot locate environment
-   ```
-   Solution: Create the environment first:
-   ```bash
-   conda env create -f environment.yml
-   ```
-
-## 📚 Resources
-
-- [LangChain Documentation](https://python.langchain.com/)
-- [LangGraph Documentation](https://langchain-ai.github.io/langgraph/)
-- [LangSmith Documentation](https://docs.smith.langchain.com/)
-- [OpenAI API Documentation](https://platform.openai.com/docs)
-
-## 🤝 Contributing
+## Contributing
 
 ### Development Setup
 
@@ -264,10 +129,3 @@ pre-commit run --all-files
 - **black**: Code formatter  
 - **pre-commit**: Git hooks for code quality
 - **pytest**: Testing framework
-
-Feel free to extend this project with additional examples, tools, or workflows. The modular structure makes it easy to
-add new components.
-
----
-
-**Happy Building! 🎉**
