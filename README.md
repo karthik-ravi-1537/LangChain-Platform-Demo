@@ -34,87 +34,55 @@ LangChain-Platform-Demo/
 └── tests/                      # Unit tests (coming soon)
 ```
 
-## 🛠️ Setup Instructions
+## Installation
 
 ### Prerequisites
-- Python 3.11+ installed
-- **For conda users**: [Anaconda](https://www.anaconda.com/products/distribution) or [Miniconda](https://docs.conda.io/en/latest/miniconda.html)
-- **For venv users**: Python's built-in venv module (included with Python 3.3+)
+- [Homebrew](https://brew.sh/) for installing uv
+- [Anaconda](https://www.anaconda.com/products/distribution) or [Miniconda](https://docs.conda.io/en/latest/miniconda.html)
 
-### 1. Create and Activate Conda Environment
+### Method 1: uv
 
-**Option A: Using environment.yml (Recommended)**
 ```bash
-# Create environment from file
+brew install uv
+
+git clone https://github.com/karthik-ravi-1537/LangChain-Platform-Demo.git
+cd LangChain-Platform-Demo
+
+uv sync
+
+source .venv/bin/activate
+```
+
+### Method 2: conda
+
+```bash
+git clone https://github.com/karthik-ravi-1537/LangChain-Platform-Demo.git
+cd LangChain-Platform-Demo
+
 conda env create -f environment.yml
-
-# Activate the environment
 conda activate langchain-platform-demo
 ```
 
-**Option B: Manual setup with pip**
+### Configure Environment Variables
+
 ```bash
-# Create a new conda environment
-conda create -n langchain-platform-demo python=3.11 -y
-
-# Activate the environment
-conda activate langchain-platform-demo
-
-# Install dependencies
-pip install -r requirements.txt
+cp .env.example .env
 ```
 
-**Option C: Using Python venv (Alternative)**
-```bash
-# Create a virtual environment
-python -m venv venv-langchain-platform-demo
-
-# Activate the environment
-# On macOS/Linux:
-source venv-langchain-platform-demo/bin/activate
-# On Windows:
-# venv-langchain-platform-demo\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
+Edit `.env` and add your API keys:
+```env
+OPENAI_API_KEY=your_openai_api_key_here
+LANGSMITH_API_KEY=your_langsmith_api_key_here
 ```
 
-### 2. Configure Environment Variables
+### Verification
+```bash
+python test_setup.py
+```
 
-1. Copy the environment template:
-   ```bash
-   cp .env.example .env
-   ```
-
-2. Edit `.env` and add your API keys:
-   ```env
-   # Required
-   OPENAI_API_KEY=your_openai_api_key_here
-   
-   # Optional (for LangSmith tracing)
-   LANGSMITH_TRACING=true
-   LANGSMITH_API_KEY=your_langsmith_api_key_here
-   LANGSMITH_PROJECT=langchain-demo
-   ```
-
-### 3. Get API Keys
-
-- **OpenAI API Key**: Get from [OpenAI Platform](https://platform.openai.com/api-keys)
-- **LangSmith API Key**: Get from [LangSmith](https://smith.langchain.com/) (optional but recommended)
-
-## 🚦 Quick Start
-
-### Run the Basic Demo
+## Quick Start
 
 ```bash
-# Make sure your environment is activated
-# For conda:
-conda activate langchain-platform-demo
-# For venv:
-# source venv-langchain-platform-demo/bin/activate  # macOS/Linux
-# venv-langchain-platform-demo\Scripts\activate     # Windows
-
-# Run the demo
 python examples/basic_usage.py
 ```
 
