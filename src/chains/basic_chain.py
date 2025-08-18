@@ -1,9 +1,9 @@
 """
 Basic LangChain examples demonstrating chains and prompt templates.
 """
+
 import os
 import sys
-from typing import List
 
 from langchain.prompts import PromptTemplate
 from langchain.schema import BaseOutputParser
@@ -16,12 +16,12 @@ from config.settings import settings
 from src.langsmith.setup import langsmith_setup
 
 
-class ListOutputParser(BaseOutputParser[List[str]]):
+class ListOutputParser(BaseOutputParser[list[str]]):
     """Parse output into a list of strings."""
 
-    def parse(self, text: str) -> List[str]:
+    def parse(self, text: str) -> list[str]:
         """Parse the LLM output into a list."""
-        return [item.strip() for item in text.split('\n') if item.strip()]
+        return [item.strip() for item in text.split("\n") if item.strip()]
 
 
 class BasicChain:
@@ -33,20 +33,16 @@ class BasicChain:
             raise ValueError("OpenAI API key is required. Please set OPENAI_API_KEY in your .env file.")
 
         # Initialize the LLM
-        self.llm = OpenAI(
-            api_key=settings.OPENAI_API_KEY,
-            temperature=0.7
-        )
+        self.llm = OpenAI(api_key=settings.OPENAI_API_KEY, temperature=0.7)
 
         # Create prompt templates
         self.simple_prompt = PromptTemplate(
-            input_variables=["topic"],
-            template="Tell me an interesting fact about {topic}."
+            input_variables=["topic"], template="Tell me an interesting fact about {topic}."
         )
 
         self.list_prompt = PromptTemplate(
             input_variables=["topic", "count"],
-            template="List {count} interesting facts about {topic}. Put each fact on a new line."
+            template="List {count} interesting facts about {topic}. Put each fact on a new line.",
         )
 
         # Create chains using RunnableSequence (prompt | llm)
@@ -66,7 +62,7 @@ class BasicChain:
             print(f"❌ Error generating fact: {e}")
             return f"Sorry, I couldn't generate a fact about {topic}."
 
-    def get_fact_list(self, topic: str, count: int = 3) -> List[str]:
+    def get_fact_list(self, topic: str, count: int = 3) -> list[str]:
         """Get a list of facts about a topic."""
         print(f"🔍 Getting {count} facts about: {topic}")
 

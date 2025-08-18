@@ -1,6 +1,7 @@
 """
 Test suite for the calculator tools.
 """
+
 import os
 import sys
 
@@ -9,7 +10,7 @@ import pytest
 # Add the project root to the path for testing
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
-from src.tools.calculator import calculator_tool, advanced_calculator_tool, CalculatorTool, AdvancedCalculatorTool
+from src.tools.calculator import AdvancedCalculatorTool, CalculatorTool, advanced_calculator_tool, calculator_tool
 
 
 class TestCalculatorTool:
@@ -23,7 +24,7 @@ class TestCalculatorTool:
             ("7 * 8", "Result: 56"),
             ("15 / 3", "Result: 5.0"),
             ("2 + 3 * 4", "Result: 14"),
-            ("(2 + 3) * 4", "Result: 20")
+            ("(2 + 3) * 4", "Result: 20"),
         ]
 
         for expression, expected in test_cases:
@@ -35,7 +36,7 @@ class TestCalculatorTool:
         invalid_expressions = [
             "2 + abc",
             "sqrt(16)",  # sqrt not available in basic calculator
-            "import os"  # malicious code
+            "import os",  # malicious code
         ]
 
         for expr in invalid_expressions:
@@ -73,7 +74,7 @@ class TestAdvancedCalculatorTool:
             ("sin(pi/2)", 1.0),
             ("cos(0)", 1.0),
             ("log(e)", 1.0),
-            ("2 * pi", 6.283185307179586)
+            ("2 * pi", 6.283185307179586),
         ]
 
         for expression, expected in test_cases:

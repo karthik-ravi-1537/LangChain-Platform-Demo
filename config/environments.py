@@ -2,13 +2,14 @@
 Environment-specific configuration settings.
 """
 
-from typing import Dict, Any
+from typing import Any
 
 from .settings import Settings
 
 
 class DevelopmentConfig(Settings):
     """Development environment configuration."""
+
     DEBUG: bool = True
     LOG_LEVEL: str = "DEBUG"
     LANGCHAIN_PROJECT: str = "langchain-demo-dev"
@@ -16,6 +17,7 @@ class DevelopmentConfig(Settings):
 
 class ProductionConfig(Settings):
     """Production environment configuration."""
+
     DEBUG: bool = False
     LOG_LEVEL: str = "INFO"
     LANGCHAIN_PROJECT: str = "langchain-demo-prod"
@@ -23,6 +25,7 @@ class ProductionConfig(Settings):
 
 class TestingConfig(Settings):
     """Testing environment configuration."""
+
     DEBUG: bool = True
     LOG_LEVEL: str = "DEBUG"
     LANGCHAIN_PROJECT: str = "langchain-demo-test"
@@ -32,7 +35,7 @@ class TestingConfig(Settings):
 
 
 # Environment configuration mapping
-CONFIG_MAP: Dict[str, Any] = {
+CONFIG_MAP: dict[str, Any] = {
     "development": DevelopmentConfig,
     "production": ProductionConfig,
     "testing": TestingConfig,

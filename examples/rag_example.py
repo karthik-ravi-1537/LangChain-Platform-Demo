@@ -1,6 +1,7 @@
 """
 Comprehensive example showcasing RAG (Retrieval-Augmented Generation) capabilities.
 """
+
 import os
 import sys
 
@@ -8,8 +9,8 @@ import sys
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
 from config.settings import settings
-from src.langsmith.setup import langsmith_setup
 from src.chains.rag_chain import RAGChain
+from src.langsmith.setup import langsmith_setup
 
 
 def main():
@@ -40,7 +41,7 @@ def main():
         while True:
             question = input("❓ Your question: ").strip()
 
-            if question.lower() in ['quit', 'exit', 'q']:
+            if question.lower() in ["quit", "exit", "q"]:
                 print("👋 Thanks for using the RAG example!")
                 break
 
@@ -52,9 +53,9 @@ def main():
 
             print(f"\n🤖 Answer: {result['answer']}")
 
-            if result['sources']:
-                print(f"\n📖 Sources:")
-                for i, source in enumerate(result['sources'], 1):
+            if result["sources"]:
+                print("\n📖 Sources:")
+                for i, source in enumerate(result["sources"], 1):
                     print(f"   {i}. {source['metadata'].get('source', 'Unknown')}")
 
             print("-" * 50)

@@ -1,20 +1,21 @@
 """
 Basic usage examples demonstrating LangChain, LangGraph, and LangSmith integration.
 """
+
 import os
 import sys
 
 # Add the project root to the path
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 
-from config.settings import settings
-from src.langsmith.setup import langsmith_setup
-from src.chains.basic_chain import BasicChain
-from src.tools.calculator import calculator_tool, advanced_calculator_tool
-
-from langchain_openai import OpenAI
-from langchain_core.messages import HumanMessage, AIMessage
+from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_openai import OpenAI
+
+from config.settings import settings
+from src.chains.basic_chain import BasicChain
+from src.langsmith.setup import langsmith_setup
+from src.tools.calculator import advanced_calculator_tool, calculator_tool
 
 
 class BasicUsageDemo:
@@ -28,10 +29,7 @@ class BasicUsageDemo:
             raise ValueError(f"Missing API keys: {', '.join(validation['missing_keys'])}")
 
         # Initialize LLM
-        self.llm = OpenAI(
-            api_key=settings.OPENAI_API_KEY,
-            temperature=0.7
-        )
+        self.llm = OpenAI(api_key=settings.OPENAI_API_KEY, temperature=0.7)
 
         # Initialize basic chain
         self.basic_chain = BasicChain()
@@ -43,12 +41,16 @@ class BasicUsageDemo:
         self.conversation_history = []
 
         # Create a simple tool-calling chain
-        self.tool_prompt = ChatPromptTemplate.from_messages([
-            ("system",
-             "You are a helpful assistant with access to calculator tools. Use the tools when needed to solve math problems."),
-            MessagesPlaceholder(variable_name="chat_history"),
-            ("human", "{input}")
-        ])
+        self.tool_prompt = ChatPromptTemplate.from_messages(
+            [
+                (
+                    "system",
+                    "You are a helpful assistant with access to calculator tools. Use the tools when needed to solve math problems.",
+                ),
+                MessagesPlaceholder(variable_name="chat_history"),
+                ("human", "{input}"),
+            ]
+        )
 
     def demo_basic_chain(self):
         """Demonstrate basic chain functionality."""
@@ -63,7 +65,7 @@ class BasicUsageDemo:
 
         # Get a list of facts
         facts = self.basic_chain.get_fact_list("artificial intelligence", 3)
-        print(f"\n📋 AI Facts:")
+        print("\n📋 AI Facts:")
         for i, fact in enumerate(facts, 1):
             print(f"   {i}. {fact}")
 
@@ -77,7 +79,7 @@ class BasicUsageDemo:
             "What is 25 * 4?",
             "Calculate the square root of 144",
             "What is the result of (10 + 5) * 3?",
-            "What is sin(pi/2)?"
+            "What is sin(pi/2)?",
         ]
 
         for calc in calculations:
@@ -93,7 +95,7 @@ class BasicUsageDemo:
     def _simple_tool_call(self, query: str) -> str:
         """Simple tool calling logic (placeholder for proper LangGraph implementation)."""
         # This is a simplified implementation - in production, use LangGraph
-        if any(op in query.lower() for op in ['*', '/', '+', '-', 'multiply', 'divide', 'add', 'subtract']):
+        if any(op in query.lower() for op in ["*", "/", "+", "-", "multiply", "divide", "add", "subtract"]):
             # Extract numbers and operations (simplified)
             if "25 * 4" in query:
                 return calculator_tool.invoke("25 * 4")
@@ -116,7 +118,7 @@ class BasicUsageDemo:
             "Hi! Can you help me with some math?",
             "What is 15 * 8?",
             "Now add 50 to that result",
-            "What was the first calculation I asked you about?"
+            "What was the first calculation I asked you about?",
         ]
 
         for question in questions:
@@ -134,10 +136,7 @@ class BasicUsageDemo:
 
         # Generate response using the chain
         chain = self.tool_prompt | self.llm
-        response = chain.invoke({
-            "input": message,
-            "chat_history": self.conversation_history
-        })
+        response = chain.invoke({"input": message, "chat_history": self.conversation_history})
 
         # Add assistant response to history
         self.conversation_history.append(AIMessage(content=response))
