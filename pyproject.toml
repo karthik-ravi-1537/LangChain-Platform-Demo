@@ -9,7 +9,7 @@ description = "Comprehensive LangChain, LangGraph, and LangSmith integration dem
 readme = "README.md"
 license = "MIT"
 authors = [{name = "Karthik Ravi"}]
-requires-python = ">=3.11"
+requires-python = "==3.11.*"
 keywords = ["langchain", "langgraph", "langsmith", "ai", "llm", "demo"]
 
 dependencies = [
